@@ -1,7 +1,7 @@
 # GHL + n8n AI Lead Automation (Laverton)
 
 Images:
-![KnowledgeBase](./0-KB.png)
+![KnowledgeBase](./images/0-KB.png)
 ![1-Google-Sheet-GHL.png](./images/1-Google-Sheet-GHL.png)
 ![2-AI-Agent.png](./images/2-AI-Agent.png)
 ![3-Qualified-LEADS.png](./images/3-Qualified-LEADS.png)
