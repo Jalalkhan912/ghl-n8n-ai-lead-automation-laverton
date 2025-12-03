@@ -1,7 +1,14 @@
 # GHL + n8n AI Lead Automation (Laverton)
 
 Images:
-![./images/0-KB.png]
+![KnowledgeBase](./0-KB.png)
+![1-Google-Sheet-GHL.png](./images/1-Google-Sheet-GHL.png)
+![2-AI-Agent.png](./images/2-AI-Agent.png)
+![3-Qualified-LEADS.png](./images/3-Qualified-LEADS.png)
+![4-Weekly-Reports.png](./images/4-Weekly-Reports.png)
+![5-Follow-Up.png](./images/5-Follow-Up.png)
+![GHL-Customer-Reply-n8n-Webhook-Call.png](./images/GHL-Customer-Reply-n8n-Webhook-Call.png)
+
 
 End-to-end lead automation for a real-estate development using **n8n**, **GoHighLevel (GHL)**, **OpenAI**, **Airtable**, **Google Sheets**, **Supabase**, and **Postgres**.
 
