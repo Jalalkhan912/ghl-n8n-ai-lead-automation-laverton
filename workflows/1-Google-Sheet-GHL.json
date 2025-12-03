@@ -1,0 +1,667 @@
+{
+  "name": "1. Google Sheet -> GHL",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10ZDs4SFEAhxqbO9rwK0FIusFVqKvyPYYwHJHA6ijtLY",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10ZDs4SFEAhxqbO9rwK0FIusFVqKvyPYYwHJHA6ijtLY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10ZDs4SFEAhxqbO9rwK0FIusFVqKvyPYYwHJHA6ijtLY/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Opportunity Status"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        336,
+        352
+      ],
+      "id": "ec7c8dda-3a0e-4b8c-b41b-6396d78aaa44",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VvgU6dgykU3MzZBZ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "email": "={{ $json.Email }}",
+        "phone": "={{ $json.Number }}",
+        "additionalFields": {
+          "firstName": "={{ $json['First Name'] }}",
+          "lastName": "={{ $json['Last Name'] }}",
+          "tags": "no reply"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        784,
+        352
+      ],
+      "id": "f209ccd6-ffc5-4c4e-bd8d-59274632b43b",
+      "name": "Create or update a contact",
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "l97pwk0Ic6KImvoB",
+          "name": "GHL Laverton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 */30 9-17 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        352
+      ],
+      "id": "1328f42e-4391-4ed8-8f69-4eaf75240953",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "content": "## 0. Triggers\n### Manual and Schedule (hourly 9–17)\nThis workflow will be run automatically every day from 9am to 5pm and will create contacts and opportunities in GHL and then GHL will send Initial message.",
+        "height": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        16,
+        112
+      ],
+      "id": "0556bf9d-98f2-4822-b3c6-3f2bfb27ba5b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 1. Google sheet\nThis will search and Load only those records where opportunity status is Empty.",
+        "height": 432,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        272,
+        160
+      ],
+      "id": "45917d10-9863-49be-b384-f7800873e25f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 3. GHL Contact and Opportunity\nHere these nodes will create or update contact and also these will create opportunity for 248 Wickham Road.",
+        "height": 432,
+        "width": 528
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        752,
+        160
+      ],
+      "id": "7bac07ec-a891-41aa-959a-a6385adda844",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 4. Google Sheet Update and AirTable\nHere Opportunity status will be updated in Google sheet and record will be created in AirTable.",
+        "height": 432,
+        "width": 656
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1296,
+        160
+      ],
+      "id": "7772d61a-d21e-4874-b81f-f2a243b4db26",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        576,
+        352
+      ],
+      "id": "84c03003-6c72-402d-94f5-80ca5a3977b3",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "content": "## 2. Limiter:\nOnly Keep First 10 and send initial message.",
+        "height": 432,
+        "width": 224
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        160
+      ],
+      "id": "fff16c6b-c0ac-46b8-b250-c40e1391904e",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        352
+      ],
+      "id": "1ca8a807-70dc-40e2-930d-ea3946852439",
+      "name": "Wait 5 Sec",
+      "webhookId": "7ae37326-a362-4202-8c6e-09e227cb111d"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "10ZDs4SFEAhxqbO9rwK0FIusFVqKvyPYYwHJHA6ijtLY",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10ZDs4SFEAhxqbO9rwK0FIusFVqKvyPYYwHJHA6ijtLY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uHfX7dRjIwOr7ZKVDV0v_3W0UhKGKfA_bz6etC9nK-M/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Get row(s) in sheet').item.json.Email }}",
+            "Opportunity Status": "Created"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Tag",
+              "displayName": "Tag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Opportunity Status",
+              "displayName": "Opportunity Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1344,
+        352
+      ],
+      "id": "6b609c95-5643-4715-a8ae-d79885c95b5c",
+      "name": "Add Opportunity Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "VvgU6dgykU3MzZBZ",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appSlxSx3owXcvEvn",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl0MJt98QQthOZsz",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn/tbl0MJt98QQthOZsz"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Number": "={{ $('Get row(s) in sheet').first().json.Number }}",
+            "First Name": "={{ $('Get row(s) in sheet').item.json['First Name'] }}",
+            "Last Name": "={{ $('Get row(s) in sheet').item.json['Last Name'] }}",
+            "Email": "={{ $('Get row(s) in sheet').item.json.Email }}",
+            "Tag": "no reply",
+            "GHL Contact ID": "={{ $('Create or update a contact').item.json.id }}",
+            "No Follow Ups": 0
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tag",
+              "displayName": "Tag",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Conversations",
+              "displayName": "Conversations",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Rationale",
+              "displayName": "Rationale",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "GHL Contact ID",
+              "displayName": "GHL Contact ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "No Follow Ups",
+              "displayName": "No Follow Ups",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1552,
+        352
+      ],
+      "id": "8659bb09-206a-48dc-8ae9-05931b52f2d3",
+      "name": "Create new record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "tbho72vjV4DMFirV",
+          "name": "Laverton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 36 Hume Road Laverton",
+        "height": 544,
+        "width": 1968,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        64
+      ],
+      "id": "60755f6a-9009-4c0c-85bd-aea2959fb4bd",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "resource": "opportunity",
+        "pipelineId": "h3oBTK3gC6cnCB7BMOod",
+        "contactId": "={{ $('Create or update a contact').item.json.id }}",
+        "name": "={{ $('Create or update a contact').item.json.fullNameLowerCase }}",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        1136,
+        352
+      ],
+      "id": "012943d1-0e7f-4a5c-9c82-7732b3621cb7",
+      "name": "Create an opportunity",
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "l97pwk0Ic6KImvoB",
+          "name": "GHL Laverton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-6f6ab453-2860-48ca-807d-e45ed52560e3"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "message",
+              "value": "=Hi {{ $json.fields['First Name'] }},\n\nYou recently enquired about a commercial project we are marketing at 36 Hume Road Laverton.\n\nAre you still on the lookout for commercial property?"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $json.fields['GHL Contact ID'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        352
+      ],
+      "id": "c71a53fe-0b7d-4aa1-bf41-2caecc471b81",
+      "name": "Send First Message"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create or update a contact": {
+      "main": [
+        [
+          {
+            "node": "Wait 5 Sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Create or update a contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5 Sec": {
+      "main": [
+        [
+          {
+            "node": "Create an opportunity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Opportunity Status": {
+      "main": [
+        [
+          {
+            "node": "Create new record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an opportunity": {
+      "main": [
+        [
+          {
+            "node": "Add Opportunity Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create new record": {
+      "main": [
+        [
+          {
+            "node": "Send First Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5f49f501-114c-4648-ac57-943d2e00a5df",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8d794a04ec10708ec084c49ddcc16f1464ac5f1dd39ba3db7a528c17f5075fcc"
+  },
+  "id": "snsSxkeeDjoB4gMZ",
+  "tags": [
+    {
+      "createdAt": "2025-10-17T12:01:00.335Z",
+      "updatedAt": "2025-10-17T12:01:00.335Z",
+      "id": "YLQk0OxAJmVAVncR",
+      "name": "36 Hume Road Laverton"
+    }
+  ]
+}

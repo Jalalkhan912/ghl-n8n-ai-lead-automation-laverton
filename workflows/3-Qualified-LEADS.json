@@ -1,0 +1,325 @@
+{
+  "name": "3. Qualified LEADS",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 13,
+              "triggerAtMinute": null
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -128,
+        128
+      ],
+      "id": "7fdcb47d-51ae-4c8e-b36a-88ee718285aa",
+      "name": "Schedule Trigger2"
+    },
+    {
+      "parameters": {
+        "content": "## Report Generator\n",
+        "height": 256,
+        "width": 368
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        64,
+        48
+      ],
+      "id": "24cd317e-9ab9-4026-a0f9-6586651f0bab",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "## 36 Hume Road Laverton",
+        "height": 336,
+        "width": 672,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -16
+      ],
+      "id": "50e9d46c-c12a-4d31-ada1-32937405fe4a",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "## Shedule Trigger\nEvery day 1pm",
+        "height": 256,
+        "width": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        48
+      ],
+      "id": "8dcee705-38d0-433a-97ea-86deee4751c1",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appSlxSx3owXcvEvn",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl0MJt98QQthOZsz",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn/tbl0MJt98QQthOZsz"
+        },
+        "filterByFormula": "{Tag} = \"Qualified\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        96,
+        128
+      ],
+      "id": "86d9f9e8-f5a4-4d9e-adde-2c57e6b72b20",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "tbho72vjV4DMFirV",
+          "name": "Laverton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "value": "appSlxSx3owXcvEvn",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblnSbSXg4rbjTT1G",
+          "mode": "list",
+          "cachedResultName": "Qualified LEADS",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn/tblnSbSXg4rbjTT1G"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Number": "={{ $json.Number }}",
+            "First Name": "={{ $json['First Name'] }}",
+            "Last Name": "={{ $json['Last Name'] }}",
+            "Email": "={{ $json.Email }}",
+            "Tag": "={{ $json.Tag }}",
+            "Conversations": "={{ $json.Conversations }}",
+            "Rationale": "={{ $json.Rationale }}",
+            "LEAD Status": "Not Called"
+          },
+          "matchingColumns": [
+            "Number"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Tag",
+              "displayName": "Tag",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Conversations",
+              "displayName": "Conversations",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Rationale",
+              "displayName": "Rationale",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "LEAD Status",
+              "displayName": "LEAD Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Called",
+                  "value": "Called"
+                },
+                {
+                  "name": "Not Called",
+                  "value": "Not Called"
+                },
+                {
+                  "name": "9/27/2025",
+                  "value": "9/27/2025"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        256,
+        128
+      ],
+      "id": "f6e39c66-c6ff-4085-89df-615f4776be71",
+      "name": "Create or update a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "tbho72vjV4DMFirV",
+          "name": "Laverton"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger2": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Create or update a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "eaed7bf6-c67e-4651-8be9-54596475b51f",
+  "meta": {
+    "instanceId": "8d794a04ec10708ec084c49ddcc16f1464ac5f1dd39ba3db7a528c17f5075fcc"
+  },
+  "id": "kcApoVR7X3PRnKTx",
+  "tags": [
+    {
+      "createdAt": "2025-10-17T12:01:00.335Z",
+      "updatedAt": "2025-10-17T12:01:00.335Z",
+      "id": "YLQk0OxAJmVAVncR",
+      "name": "36 Hume Road Laverton"
+    }
+  ]
+}

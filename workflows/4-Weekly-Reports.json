@@ -1,0 +1,305 @@
+{
+  "name": "4. Weekly Reports",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appSlxSx3owXcvEvn",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl0MJt98QQthOZsz",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn/tbl0MJt98QQthOZsz"
+        },
+        "filterByFormula": "=AND({Tag}, IS_AFTER(CREATED_TIME(), DATEADD(TODAY(), -7, 'days')))",
+        "options": {}
+      },
+      "id": "2f372a09-751f-4e2f-9fb6-633270ef4b7d",
+      "name": "Airtable → Search (last 7 days)",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        128,
+        3184
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "vnoT3guKYxrWbx9S",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Items from Airtable Search\nconst items = $input.all();\n\n// Outcome labels we care about (lower-case)\nconst wanted = [\n  'no reply',\n  'warm but not qualified',\n  'not interested',\n  'interested in another property',\n  'qualified',\n  'needs a call for another reason',\n  'do not contact',\n  'wants info pack',\n  'followed up - no reply'\n];\n\nconst counts = Object.fromEntries(wanted.map(k => [k, 0]));\n\nfunction findTagField(fieldsObj){\n  if(!fieldsObj) return null;\n  const keys = Object.keys(fieldsObj);\n  const candidates = ['tag','tags','outcome','conversation outcome','status','conversation outcome tag'];\n  const lc = s => s.toLowerCase();\n  return keys.find(k => candidates.includes(lc(k))) || null;\n}\n\nfunction normalizeToTags(v){\n  if(v==null) return [];\n  if(Array.isArray(v)) return v.map(x=>String(x).trim().toLowerCase()).filter(Boolean);\n  const s = String(v).trim();\n  if(!s) return [];\n  if(s.includes(',')) return s.split(',').map(x=>x.trim().toLowerCase()).filter(Boolean);\n  return [s.toLowerCase()];\n}\n\nfor(const it of items){\n  const fields = it.json.fields || it.json;\n  const tagField = findTagField(fields);\n  const raw = tagField ? fields[tagField] : undefined;\n  const tags = normalizeToTags(raw);\n  for(const t of tags) if(t in counts) counts[t]++;\n}\n\nreturn [{\n  json: {\n    Name: '36 Hume Road Laverton',\n    'No Reply': counts['no reply'],\n    'Warm But Not Qualified': counts['warm but not qualified'],\n    'Not Interested': counts['not interested'],\n    'Interested in Another Property': counts['interested in another property'],\n    'Qualified': counts['qualified'],\n    'Needs A Call for another reason': counts['needs a call for another reason'],\n    'Do Not Contact': counts['do not contact'],\n    'Wants Info Pack': counts['wants info pack'],\n    'Followed Up - No Reply': counts['followed up - no reply']\n  }\n}];"
+      },
+      "id": "8fa797a1-3ee1-4070-a983-53ab6f090a1b",
+      "name": "Code → Aggregate by Tag",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        3184
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appSlxSx3owXcvEvn",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblfEwoH6knqZtjtd",
+          "mode": "list",
+          "cachedResultName": "Weekly Reports 36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn/tblfEwoH6knqZtjtd"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "No Reply": "={{ $json['No Reply'] }}",
+            "Warm But Not Qualified": "={{ $json['Warm But Not Qualified'] }}",
+            "Not Interested": "={{ $json['Not Interested'] }}",
+            "Interested in Another Property": "={{ $json['Interested in Another Property'] }}",
+            "Qualified": "={{ $json.Qualified }}",
+            "Needs A Call for another reason": "={{ $json['Needs A Call for another reason'] }}",
+            "Do Not Contact": "={{ $json['Do Not Contact'] }}",
+            "Wants Info Pack": "={{ $json['Wants Info Pack'] }}",
+            "Followed Up - No Reply": "={{ $json['Followed Up - No Reply'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Week",
+              "displayName": "Week",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "No Reply",
+              "displayName": "No Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Warm But Not Qualified",
+              "displayName": "Warm But Not Qualified",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Not Interested",
+              "displayName": "Not Interested",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Interested in Another Property",
+              "displayName": "Interested in Another Property",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Qualified",
+              "displayName": "Qualified",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Needs A Call for another reason",
+              "displayName": "Needs A Call for another reason",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Do Not Contact",
+              "displayName": "Do Not Contact",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Wants Info Pack",
+              "displayName": "Wants Info Pack",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Followed Up - No Reply",
+              "displayName": "Followed Up - No Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "76b735e3-c65e-4b85-b726-ba2cb61dbf54",
+      "name": "Airtable → Append Weekly Row",
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        592,
+        3184
+      ],
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "vnoT3guKYxrWbx9S",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Laverton roll-up (scheduled daily @5 AM). Pulls last 7 days from the Laverton table, aggregates by Tag in one Code node, then appends a record to the Laverton Weekly Reports table.\nIf your base uses a {Date} field, change filterByFormula to: AND({Tag}, IS_AFTER({Date}, DATEADD(TODAY(), -7, 'days'))).",
+        "height": 276,
+        "width": 916
+      },
+      "id": "8c22d4aa-8666-45c0-9e38-28fcca77f9e2",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        3088
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 5
+            }
+          ]
+        }
+      },
+      "id": "1e41f6fe-9bc3-49ea-8e83-1a51c303e3f4",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        3184
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Airtable → Search (last 7 days)": {
+      "main": [
+        [
+          {
+            "node": "Code → Aggregate by Tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code → Aggregate by Tag": {
+      "main": [
+        [
+          {
+            "node": "Airtable → Append Weekly Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Airtable → Search (last 7 days)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6ef0dfa4-3ef8-49c9-a4f3-cc7cbebff4d9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8d794a04ec10708ec084c49ddcc16f1464ac5f1dd39ba3db7a528c17f5075fcc"
+  },
+  "id": "qX3rOaJP2HpcYc2z",
+  "tags": [
+    {
+      "createdAt": "2025-10-17T12:01:00.335Z",
+      "updatedAt": "2025-10-17T12:01:00.335Z",
+      "id": "YLQk0OxAJmVAVncR",
+      "name": "36 Hume Road Laverton"
+    }
+  ]
+}

@@ -1,0 +1,379 @@
+{
+  "name": "5. Follow Up",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2a0ca9c9-6c22-4d45-88d2-b4f9cd4a4403",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appSlxSx3owXcvEvn",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl0MJt98QQthOZsz",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn/tbl0MJt98QQthOZsz"
+        },
+        "filterByFormula": "=AND(\n  {Tag} = \"no reply\",\n  {No Follow Ups} = 0,\n  IS_BEFORE(CREATED_TIME(), DATEADD(NOW(), -4, 'days'))\n)",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "49f7d0c2-a011-40fa-9200-cbf7a481a716",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "tbho72vjV4DMFirV",
+          "name": "Laverton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-6f6ab453-2860-48ca-807d-e45ed52560e3"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "message",
+              "value": "=Hi {{ $json.firstName }},thought I'd check back on  n8n 36 Hume Road Laverton, Seaford before we mark you as not interested.Are you still curious about this development?"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $('Update Tag').item.json.fields['GHL Contact ID'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "62e28c6d-78a3-4b56-8e0f-a3a036897245",
+      "name": "Send First Message"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "contactId": "={{ $json.fields['GHL Contact ID'] }}",
+        "updateFields": {
+          "tags": "={{ $json.fields.Tag }}"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "b90759d1-5e76-43a6-afe8-7f5f64246c3b",
+      "name": "Update Tag in GHL",
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "l97pwk0Ic6KImvoB",
+          "name": "GHL Laverton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appSlxSx3owXcvEvn",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl0MJt98QQthOZsz",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn/tbl0MJt98QQthOZsz"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "No Follow Ups": 1,
+            "Tag": "followed up - no reply"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tag",
+              "displayName": "Tag",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Conversations",
+              "displayName": "Conversations",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Rationale",
+              "displayName": "Rationale",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "GHL Contact ID",
+              "displayName": "GHL Contact ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "No Follow Ups",
+              "displayName": "No Follow Ups",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        448,
+        0
+      ],
+      "id": "ef88e19b-f207-43ab-962d-ac84b547a4f1",
+      "name": "Update Tag",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "tbho72vjV4DMFirV",
+          "name": "Laverton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Follow up:\n### After 4 days if still has a tag of no_reply just one time.",
+        "height": 256,
+        "width": 1136
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -96
+      ],
+      "id": "d8d5a8f9-7b29-46af-abb0-3064f49335eb",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Update Tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Tag in GHL": {
+      "main": [
+        [
+          {
+            "node": "Send First Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Tag": {
+      "main": [
+        [
+          {
+            "node": "Update Tag in GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "69a5b856-7879-4446-b9fb-3c8bfd705431",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8d794a04ec10708ec084c49ddcc16f1464ac5f1dd39ba3db7a528c17f5075fcc"
+  },
+  "id": "0yq3yZaslhxUWPAV",
+  "tags": [
+    {
+      "createdAt": "2025-10-17T12:01:00.335Z",
+      "updatedAt": "2025-10-17T12:01:00.335Z",
+      "id": "YLQk0OxAJmVAVncR",
+      "name": "36 Hume Road Laverton"
+    }
+  ]
+}

@@ -1,0 +1,734 @@
+{
+  "name": "2. AI Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message.body }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=CRITICAL: Silent Mode\n\nIf the input equals undefined, inbound call, outbound call, is empty/whitespace, or looks like a system notification, you must return an empty string \"\".\nDo not explain, do not send placeholders like (No Output), just return \"\".\nIf Silent Mode is triggered, stop. No reply is sent. No tagging output either.\n\nRole & Scope\n\nYou are a highly capable AI sales assistant for CVA engaging inbound leads for the industrial development at 36 Hume Road, Laverton VIC 3028. You speak naturally, conversationally, and professionally. If asked, say:\n“Yes, I’m an AI assistant for CVA. I can help quickly or arrange a human to call.”\n\nIn addition to conversing, you must classify the lead with exactly one tag from the controlled list defined below, using the entire conversation memory.\n\nLead Info (dynamic fields)\n\nFirst Name: {{ $json.body.first_name }}\n\nLast Name: {{ $json.body.last_name }}\n\nEmail: {{ $json.body.email }}\n\nPhone: {{ $json.body.phone }}\n\nTone & Style\n\nWarm, confident, professional\n\nKeep replies about 80–180 characters (up to 600 when needed)\n\nNever use dashes, use commas instead\n\nShort, clear, natural messages\n\nOccasionally use the lead’s name\n\nEmojis only when they feel genuine\n\nMake the experience feel premium, effortless, smart\n\nConversation Flow\n\nEngage first\nStart with a friendly greeting, answer any immediate question, then move naturally toward qualification.\n\nAsk and confirm qualification questions (one at a time, wait for reply)\n\n“Do you see yourself using the space for your own business, or more as an investment?”\n\n“What sort of budget do you have in mind?”\n\n“Most units here start from the mid $700 000 range, does that line up with what you were thinking?”\n\n“If we found the perfect fit, are you looking to make a move in the next few months?”\nIf answers are vague, politely ask again until budget and timeframe are clear.\n\nQualification criteria\nA lead is Qualified only if:\n\nBudget ≥ $700 000 AUD, and\n\nTimeframe ≤ 3 months\nIf not qualified, try once to re-engage:\n“Totally understand, sometimes buyers look early just to get a feel for the market. Would you be open to seeing what’s available now?”\nIf still unqualified, offer to send an info pack.\n\nIf Qualified → Offer the call\n“Great, we’d love to show you what’s available, these spaces are going quickly. I’ll have one of our agents give you a quick call to talk through availability and pricing.”\n✅ Do not ask for times or confirm any schedule.\n\nIf lead is not ready\n“No problem at all. Would you like an info pack so you can keep an eye on the development?”\n\nIf lead says they’re not interested\nWarm them once: “Totally understand. Can I send you a quick info pack so you can keep an eye on the market?”\nIf still not interested: “No worries at all, I’ll leave it there for now. Reach out anytime if things change.”\n\nProfessionalism & Filtering\n\nAlways polite and calm, never pushy\n\nKeep conversation premium and helpful\n\nOffer handoff to human if requested or if discussion becomes complex\n\nGoal: Maximize qualified call offers, confirm budget + timeframe before offering a call.\nUse short, natural messages for general chat, longer only for rapport.\n\nDeterministic Tagging (use full conversation memory)\n\nReturn exactly one final tag from this set:\n\nWarm but not qualified\n\nNot interested\n\nInterested in another property\n\nQualified\n\nNeeds a call for another reason\n\nDo not contact (for aggressive people or those who ask to be removed)\n\nWants info pack\n\nDefinitions & Triggers\n\nDo not contact\nUse if the person opts out or is hostile/aggressive. Triggers include: “stop”, “unsubscribe”, “remove me”, “do not contact”, “take me off your list”, abuse/hostility, deceased.\n👉 Overrides all others.\n\nNot interested\nThey express disinterest in the property/offer but don’t opt out.\nExamples: “not interested”, “no thanks”, “not right now”, “already bought”, “looking elsewhere”.\n\nInterested in another property\nShows interest but clearly redirects to a different property or location.\nExamples: “I’m after something else in [different area]”, “I prefer another listing”.\n\nQualified\nClear intent and strong fit signals: budget fits, product/location match, short timeline, shares contact details, asks next steps/booking.\nNo opt-out/hostility and no explicit immediate request for info pack or call.\n\nNeeds a call for another reason\nLead explicitly asks for a call or a call is needed to resolve key questions.\nExamples: “call me”, “can we chat by phone?”, complex case requiring discussion.\nPrefer this over Qualified when a call is explicitly requested.\n\nWants info pack\nLead explicitly asks for an information pack, brochure, or details by email/message.\nExamples: “send the info pack”, “email me the details”, “can you send more info?”.\nNo opt-out/hostility.\n\nWarm but not qualified\nInterest shown but missing clear qualification signals or insufficient info to confirm fit. Default fallback when none of the above apply.\n\nDecision Rules (apply in order)\n\nIf any Do not contact trigger appears → tag Do not contact.\n\nElse if clearly not interested → Not interested.\n\nElse if mentions different property/location → Interested in another property.\n\nElse if explicitly asks for a call → Needs a call for another reason.\n\nElse if explicitly asks for info pack → Wants info pack.\n\nElse if strong qualification signals → Qualified.\n\nElse → Warm but not qualified.\nConsider latest messages most strongly. Treat any existing tag as a soft prior only. Do not invent facts.\n\nOutput Format\n\nAlways return a single JSON object with these fields:\n\n{\n      \"reply\": \"<the exact message to send to the lead, following tone/length rules>\",\n      \"tagging\": {\n          \"tag\": \"<one of the tags exactly as listed>\",\n          \"rationale\": \"<1–2 concise sentences citing key evidence from the conversation>\"\n      }\n}\n\n\nreply is the only text the lead sees. Keep within the style and length rules, never use dashes, use commas instead.\n\ntagging is for internal use, based on the entire conversation.\n\nIf Silent Mode triggers, return \"\" for \"reply\"."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        1600
+      ],
+      "id": "c63b4cee-35b3-4aa4-aa84-84320c9c1db0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        1760
+      ],
+      "id": "887d026e-ffe3-4791-b6ff-a20e7867e3da",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "juhFF5ApyaqzsrKq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Webhook').item.json.body.contact_id }}",
+        "tableName": "laverton_chat_memory",
+        "contextWindowLength": 50
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        1904
+      ],
+      "id": "6a43e6b5-6e9e-4131-9a71-c6665ec611a2",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "n1Z9o8DUKeUhJXZz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## WebHook Trigger\nThis Node will start the Agentic flow when Lead replay.",
+        "height": 256
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        1504
+      ],
+      "id": "f7ccd6fb-0671-4ab5-9694-bd7e33c3a225",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## AI AGENT\nThis Agent will handle the recieving and sending SMS.",
+        "height": 544,
+        "width": 592
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        1504
+      ],
+      "id": "df7c7579-9724-4f64-b0b1-3265f9380274",
+      "name": "Sticky Note6",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Reply to LEAD\n",
+        "height": 288,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        416,
+        1760
+      ],
+      "id": "13ca3d8a-a35c-4d59-8fbb-7178af9df52b",
+      "name": "Sticky Note9",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## 36 Hume Road Laverton",
+        "height": 608,
+        "width": 1824,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        1456
+      ],
+      "id": "e189f2d8-75ee-4556-9358-eaa1c26bc676",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        1936
+      ],
+      "id": "2d473c7f-cf30-4920-83c1-85407cd0eee0",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "juhFF5ApyaqzsrKq",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use This to load documents related to 248_Wickham_Road only.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        -16,
+        1792
+      ],
+      "id": "f00e24bc-69b5-4d29-b7c8-a30662c9e7b3",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "bI3uREYi7gfnBlN7",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "36-Hume-Road-Laverton",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        1600
+      ],
+      "id": "ac3c4cc4-3396-48d7-9519-687a32339158",
+      "name": "Webhook",
+      "webhookId": "f0436e5b-5c46-4034-b3b2-f0fb53f0d6e7"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://services.leadconnectorhq.com/conversations/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer pit-6f6ab453-2860-48ca-807d-e45ed52560e3"
+            },
+            {
+              "name": "Version",
+              "value": "2021-04-15"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "SMS"
+            },
+            {
+              "name": "message",
+              "value": "={{ $json.output.reply }}"
+            },
+            {
+              "name": "contactId",
+              "value": "={{ $('Webhook').item.json.body.contact_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        1856
+      ],
+      "id": "4b45a4d4-55f8-4aaa-b5aa-1cb53e0480e9",
+      "name": "Reply to LEAD"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\"reply\": \"<the exact message to send to the lead, following tone/length rules>\",\n\"tagging\": {\n\"tag\": \"<one of the tags exactly as listed>\",\n\"rationale\": \"<1–2 concise sentences citing key evidence from the conversation>\"\n}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        1904
+      ],
+      "id": "517e9dfb-447d-44dc-9e45-6842fb12408c",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "laverton_chat_memory",
+          "mode": "list",
+          "cachedResultName": "laverton_chat_memory"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "session_id",
+              "value": "={{ $('Webhook').item.json.body.contact_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        480,
+        1600
+      ],
+      "id": "fc3aed3a-1415-42ef-9157-c04c918bbbd1",
+      "name": "Select rows from a table",
+      "credentials": {
+        "postgres": {
+          "id": "n1Z9o8DUKeUhJXZz",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "message.type"
+            },
+            {
+              "fieldToAggregate": "message.content"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        640,
+        1600
+      ],
+      "id": "38580083-0619-4693-ab4e-128506d72fd3",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "jsCode": "/**\n * n8n Code node (JavaScript)\n * Input: items[0].json contains either:\n *   A) the conversation array you showed (top-level array with one object having `type` and `content` arrays), or\n *   B) an object with that structure at `json.conversation`, or\n *   C) the object itself (with `type` and `content`).\n *\n * Output:\n * - items[0].json.transcript: [{ role: 'human'|'ai', text: '...' }, ...]\n * - items[0].json.transcriptText: \"Human: ...\\nAI: ...\\n...\"\n */\n\nfunction extractConversation(root) {\n  // Normalize to the object that has { type: [...], content: [...] }\n  let convObj = null;\n\n  if (Array.isArray(root) && root.length && root[0]?.type && root[0]?.content) {\n    convObj = root[0];\n  } else if (root?.conversation) {\n    const c = root.conversation;\n    if (Array.isArray(c) && c.length && c[0]?.type && c[0]?.content) convObj = c[0];\n    else if (c?.type && c?.content) convObj = c;\n  } else if (root?.type && root?.content) {\n    convObj = root;\n  }\n\n  if (!convObj || !Array.isArray(convObj.type) || !Array.isArray(convObj.content)) {\n    throw new Error(\"Could not find a valid { type:[], content:[] } conversation in items[0].json\");\n  }\n\n  const types = convObj.type;\n  const contents = convObj.content;\n  const len = Math.min(types.length, contents.length);\n\n  const clean = [];\n\n  for (let i = 0; i < len; i++) {\n    const roleRaw = String(types[i] || \"\").toLowerCase().trim();\n    const role = roleRaw === \"human\" ? \"human\" : \"ai\";\n\n    let text = contents[i];\n\n    // If the content is a stringified JSON from the AI, extract only the reply.\n    if (typeof text === \"string\") {\n      const trimmed = text.trim();\n\n      // Fast check: looks like JSON?\n      if ((trimmed.startsWith(\"{\") && trimmed.endsWith(\"}\")) || (trimmed.startsWith(\"[\") && trimmed.endsWith(\"]\"))) {\n        try {\n          const parsed = JSON.parse(trimmed);\n\n          // Common shapes:\n          // {\"output\":{\"reply\":\"...\",\"tagging\":{...}}}\n          // {\"reply\":\"...\"} or { reply: \"...\" }\n          // Fallback to any string field named 'reply'\n          if (parsed?.output?.reply != null) {\n            text = String(parsed.output.reply);\n          } else if (parsed?.reply != null) {\n            text = String(parsed.reply);\n          } else {\n            // Last resort: try to pull a visible string if present; otherwise keep original text\n            const possible = [\"text\", \"message\", \"content\"].find(k => typeof parsed?.[k] === \"string\");\n            text = possible ? String(parsed[possible]) : trimmed;\n          }\n        } catch {\n          // Not valid JSON; keep as-is\n          text = trimmed;\n        }\n      }\n    } else if (text && typeof text === \"object\") {\n      // If content is already an object (rare), try to read common fields\n      if (text?.output?.reply != null) text = String(text.output.reply);\n      else if (text?.reply != null) text = String(text.reply);\n      else if (text?.text != null) text = String(text.text);\n      else text = JSON.stringify(text);\n    } else if (text == null) {\n      text = \"\";\n    }\n\n    clean.push({ role, text: String(text).trim() });\n  }\n\n  return clean;\n}\n\nconst input = items[0]?.json ?? {};\nconst transcript = extractConversation(input);\n\n// Build a readable transcript string (no tags/rationales)\nconst transcriptText = transcript\n  .map(m => `${m.role === \"human\" ? \"Human\" : \"AI\"}: ${m.text}`)\n  .join(\"\\n\");\n\n// Return enriched item\nreturn [\n  {\n    json: {\n      transcriptText,\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        1600
+      ],
+      "id": "35fc1de0-e365-440e-b9c8-920e44568f09",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appSlxSx3owXcvEvn",
+          "mode": "list",
+          "cachedResultName": "36 Hume Road Laverton",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl0MJt98QQthOZsz",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://airtable.com/appSlxSx3owXcvEvn/tbl0MJt98QQthOZsz"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tag": "={{ $('AI Agent').first().json.output.tagging.tag }}",
+            "Rationale": "={{ $('AI Agent').first().json.output.tagging.rationale }}",
+            "GHL Contact ID": "={{ $('Webhook').first().json.body.contact_id }}",
+            "Conversations": "={{ $json.transcriptText }}"
+          },
+          "matchingColumns": [
+            "GHL Contact ID"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Tag",
+              "displayName": "Tag",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Conversations",
+              "displayName": "Conversations",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Rationale",
+              "displayName": "Rationale",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "GHL Contact ID",
+              "displayName": "GHL Contact ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "No Follow Ups",
+              "displayName": "No Follow Ups",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        1600
+      ],
+      "id": "d1bad412-36ba-46f4-ad0e-f09614f38b29",
+      "name": "Update Tag and Conv",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "tbho72vjV4DMFirV",
+          "name": "Laverton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "contactId": "={{ $json.fields['GHL Contact ID'] }}",
+        "updateFields": {
+          "tags": "={{ $json.fields.Tag }}"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.highLevel",
+      "typeVersion": 2,
+      "position": [
+        1152,
+        1600
+      ],
+      "id": "e950e470-7ea1-4029-872a-352721ee971a",
+      "name": "Update Tag in GHL",
+      "credentials": {
+        "highLevelOAuth2Api": {
+          "id": "l97pwk0Ic6KImvoB",
+          "name": "GHL Laverton"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Get Conv -> Make Readable -> Update Conv and Tag in Air Table and GHL",
+        "height": 240,
+        "width": 928
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        416,
+        1504
+      ],
+      "id": "e1e331aa-0225-4634-b36d-87c5fd826849",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ba18ce4e-e4fd-4315-82e3-5542fb6e0d08",
+              "leftValue": "={{ $json.output.reply }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        1856
+      ],
+      "id": "d69113e7-aa96-4dd0-9f7a-ecb8380919a0",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Select rows from a table",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select rows from a table": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Update Tag and Conv",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Tag and Conv": {
+      "main": [
+        [
+          {
+            "node": "Update Tag in GHL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Reply to LEAD",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "66e7b807-d4e7-41e9-9d77-193ff5801346",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8d794a04ec10708ec084c49ddcc16f1464ac5f1dd39ba3db7a528c17f5075fcc"
+  },
+  "id": "f3bIdA6bxcZkWXc8",
+  "tags": [
+    {
+      "createdAt": "2025-10-17T12:01:00.335Z",
+      "updatedAt": "2025-10-17T12:01:00.335Z",
+      "id": "YLQk0OxAJmVAVncR",
+      "name": "36 Hume Road Laverton"
+    }
+  ]
+}
